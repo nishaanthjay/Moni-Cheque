@@ -1,0 +1,296 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Moni-Cheque design tokens
+
+   Structure (type scale, spacing, radii, the hairline-ring technique,
+   the reveal motion) comes from DESIGN.md. Colour is Moni-Cheque's own
+   supplied brand palette, not the reference site's violet/green.
+   ============================================================ */
+
+@theme {
+  /* -- brand palette ---------------------------------------- */
+  /* Supplied palette. All five are cool (cyan -> green -> deep teal);
+     there is no warm tone in the set, which constrains the severity
+     ramp below -- see the note there. */
+  --color-brand-cyan: #2de1fc;
+  --color-brand-spring: #2afc98;
+  --color-brand-vivid: #09e85e;
+  --color-brand-sea: #16c172;
+  --color-brand-deep: #214f4b;
+
+  /* -- color roles ------------------------------------------ */
+  /* The ground is tinted toward the palette's deep teal rather than left
+     neutral grey, so the bright accents read as part of one system. */
+  --color-ground: #060c0c;          /* page canvas                     */
+  --color-surface: #0a1211;         /* raised card / panel             */
+  --color-surface-2: #0e1817;       /* nested card inside a panel      */
+  --color-glass: #0a1211cc;         /* translucent panel base          */
+
+  --color-ink: #ffffff;             /* headings, high-emphasis figures */
+  --color-ink-muted: #a4b0ae;       /* body copy, subheads, eyebrows   */
+  /* Measured 5.08:1 on the darkest surface. The obvious darker grey sat at
+     3.70:1 and failed AA on 12px meta labels, which is most of the
+     dashboard chrome. */
+  --color-ink-faint: #7d8b85;       /* meta, disabled, axis labels     */
+  --color-ink-inverted: #06181c;    /* text on bright fills            */
+
+  --color-hairline: #ffffff1a;      /* the universal 10% edge          */
+  --color-hairline-soft: #ffffff0d;
+
+  /* Cyan is the action colour. Measured 12.5:1 as text on the ground and
+     11.5:1 for --color-ink-inverted on a cyan fill. White on cyan is
+     1.58:1 and is never used -- accent fills always take dark text. */
+  --color-accent: #2de1fc;
+  --color-accent-soft: #2de1fc1f;
+  --color-accent-ring: #2de1fc33;
+
+  --color-positive: #2afc98;        /* live dots, positive deltas      */
+  --color-positive-soft: #2afc981f;
+
+  /* Misconception prevalence ramp.
+     A sequential single-hue intensity ramp, not a traffic light: dim at low
+     prevalence, bright at high, so the eye lands on what needs reteaching.
+     NOTE: this palette contains no warm tone, so "most of the class holds
+     this misconception" cannot be coloured as a warning. Bar length, rank
+     order, and the printed percentage carry the severity; colour is
+     deliberately redundant rather than semantic. */
+  /* Ramp steps are separated by lightness, not hue: L=0.40 -> 0.59 -> 0.72.
+     The deep teal is too dark to carry a bar (2.11:1 on surface) so it
+     serves as the unfilled track behind them instead. */
+  --color-sev-low: #16c172;
+  --color-sev-mid: #09e85e;
+  --color-sev-high: #2afc98;
+  --color-track: #214f4b;
+
+  /* Domain identity. Nominal categories, so hue is the right encoding here --
+     unlike prevalence, where hue would falsely read as good/bad. Six domains
+     across five brand colours plus one shared neutral tint. */
+  --color-domain-banking: #2de1fc;
+  --color-domain-credit: #2afc98;
+  --color-domain-spending: #09e85e;
+  --color-domain-saving: #16c172;
+  --color-domain-income: #6fd8c4;
+  --color-domain-risk: #4a8f88;
+
+  /* System colour, NOT part of the brand palette.
+     Form validation needs a signal that is unmistakably "something is
+     wrong", and every brand colour here is a cool green or cyan -- three of
+     which already mean "good" elsewhere in the UI. Used only for input
+     errors, always paired with an icon and text so colour is never the sole
+     carrier of the message. */
+  --color-danger: #ff6b5e;
+
+  /* -- type ------------------------------------------------- */
+  --font-sans: "Satoshi", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+
+  --text-display: 4.5rem;           /* 72px */
+  --text-display--line-height: 1.06;
+  --text-display--letter-spacing: -0.04em;
+
+  --text-h1: 3.25rem;               /* 52px */
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.04em;
+
+  --text-h2: 3rem;                  /* 48px */
+  --text-h2--line-height: 1.1;
+  --text-h2--letter-spacing: -0.02em;
+
+  --text-h3: 2rem;                  /* 32px */
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.02em;
+
+  --text-h4: 1.5rem;                /* 24px */
+  --text-h4--line-height: 1.25;
+  --text-h4--letter-spacing: -0.02em;
+
+  --text-lg: 1.25rem;               /* 20px */
+  --text-lg--line-height: 1.4;
+  --text-lg--letter-spacing: -0.02em;
+
+  --text-md: 1.125rem;              /* 18px */
+  --text-md--line-height: 1.4;
+  --text-md--letter-spacing: -0.02em;
+
+  --text-base: 0.875rem;            /* 14px — the body default */
+  --text-base--line-height: 1.4;
+  --text-base--letter-spacing: -0.02em;
+
+  --text-sm: 0.75rem;               /* 12px — eyebrows, labels, meta */
+  --text-sm--line-height: 1.4;
+  --text-sm--letter-spacing: -0.02em;
+
+  /* -- radius ----------------------------------------------- */
+  --radius-card: 24px;
+  --radius-btn: 12px;
+  --radius-ctl: 8px;
+  --radius-pill: 999px;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+
+@layer base {
+  * {
+    /* Tracking is a signature: negative at every size, always. */
+    letter-spacing: -0.02em;
+  }
+
+  html {
+    background-color: var(--color-ground);
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* The ambient bloom deliberately bleeds past the viewport. `clip` contains
+       it without creating a scroll container -- `hidden` would break the
+       sticky nav. */
+    overflow-x: clip;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-ground);
+    color: var(--color-ink-muted);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.4;
+    /* Weight is the other signature: 500 everywhere, never bold. */
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-synthesis-weight: none;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-ink);
+    font-weight: 500;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  p { margin: 0; text-wrap: pretty; }
+
+  button, input, select, textarea {
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+  }
+
+  /* Numeric UI should never shift width as values change. */
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-ink-inverted);
+  }
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+
+@utility ring-hairline {
+  /* Edges are drawn with box-shadow, never border — keeps the 1px
+     off the layout box. This is the defining structural technique. */
+  box-shadow: 0 0 0 1px var(--color-hairline);
+}
+
+@utility ring-accent {
+  box-shadow:
+    0 4px 10px -2px rgb(0 0 0 / 0.25),
+    0 2px 2px -1px rgb(0 0 0 / 0.2),
+    0 0 0 1px var(--color-accent-ring);
+}
+
+@utility shadow-lifted {
+  box-shadow:
+    0 0.6px 1.57px -1.5px rgb(0 0 0 / 0.17),
+    0 2.29px 5.95px -3px rgb(0 0 0 / 0.14),
+    0 10px 26px -4.5px rgb(0 0 0 / 0.02);
+}
+
+@utility glow-positive {
+  box-shadow: 0 0 10px 0 rgb(42 252 152 / 0.8);
+}
+
+@utility fade-y {
+  /* Column masks — cards dissolve into the ground at both ends. */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%, #000 10%, #000 90%, transparent 100%
+  );
+}
+
+/* ============================================================
+   Motion — the one repeated animation on the reference site:
+   fade + blur + rise, once, on scroll into view.
+   ============================================================ */
+
+@layer components {
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(6px);
+    transition:
+      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: transform, opacity, filter;
+  }
+
+  .reveal[data-shown="true"] {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  .reveal,
+  .reveal[data-shown="true"] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Ambient cyan bloom placed *behind* panels to lift them off the page. */
+@utility bloom {
+  position: relative;
+}
+@utility bloom-layer {
+  position: absolute;
+  /* Bleeds vertically only. A 60px blur already softens the horizontal edges,
+     so there is nothing to gain from extending past the container -- and
+     doing so pushed the document 10px wide at mobile widths. */
+  inset: -20% 0 20% 0;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgb(45 225 252 / 0.18) 0%,
+    rgb(22 193 114 / 0.07) 40%,
+    transparent 70%
+  );
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}

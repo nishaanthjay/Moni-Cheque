@@ -1,0 +1,20 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Design-reference scrape artifacts (regenerate with the firecrawl commands
+# recorded in DESIGN.md). The screenshots are kept -- DESIGN.md links them.
+.firecrawl/*.html
+.firecrawl/*.json
